@@ -48,4 +48,69 @@ interface ChainE<A, B, C, D> {
         definition.getTypeArguments("test.ChainE")[3].type == Byte
 
     }
+
+    void "test arrays are supported as type argument in an interface"() {
+        given:
+        BeanDefinition definition = buildBeanDefinition('test.A','''\
+package test;
+
+import javax.inject.Singleton;
+
+@Singleton
+class A implements B<Byte[]> {
+}
+
+interface B<T> {
+}
+''')
+
+        expect:
+        definition.getTypeArguments("test.B").size() == 1
+        definition.getTypeArguments("test.B")[0].type == Byte[]
+    }
+
+    void "test arrays are supported as type argument in a class"() {
+        given:
+        BeanDefinition definition = buildBeanDefinition('test.A','''\
+package test;
+
+import javax.inject.Singleton;
+
+@Singleton
+class A extends B<Byte[]> {
+}
+
+class B<T> {
+}
+''')
+
+        expect:
+        definition.getTypeArguments("test.B").size() == 1
+        definition.getTypeArguments("test.B")[0].type == Byte[]
+    }
+
+    void "test arrays of other type parameters are supported as type argument in an interface"() {
+        given:
+        BeanDefinition definition = buildBeanDefinition('test.A','''\
+package test;
+
+import javax.inject.Singleton;
+
+@Singleton
+class A implements B<Byte> {
+}
+
+interface B<T> extends C<T[]>  {
+}
+
+interface C<U> {
+}
+''')
+
+        expect:
+        definition.getTypeArguments("test.B").size() == 1
+        definition.getTypeArguments("test.B")[0].type == Byte
+        definition.getTypeArguments("test.C").size() == 1
+        definition.getTypeArguments("test.C")[0].type == Object[]
+    }
 }

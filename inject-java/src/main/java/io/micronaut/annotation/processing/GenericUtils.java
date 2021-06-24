@@ -453,7 +453,7 @@ public class GenericUtils {
     }
 
     private void resolveGenericTypeParameter(Map<String, TypeMirror> resolvedParameters, String parameterName, TypeMirror mirror, Map<String, TypeMirror> boundTypes) {
-        if (mirror instanceof DeclaredType) {
+        if (mirror instanceof DeclaredType || mirror instanceof ArrayType) {
             resolvedParameters.put(
                     parameterName,
                     mirror
